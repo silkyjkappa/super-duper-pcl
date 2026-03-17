@@ -1,0 +1,14 @@
+# PyCharm project files
+.idea/
+
+# Python virtual environment
+.venv/
+venv/
+
+# Bytecode files
+__pycache__/
+*.pyc
+
+# OS files
+.DS_Store
+Thumbs.db
