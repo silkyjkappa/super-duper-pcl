@@ -657,6 +657,14 @@ def main():
         if not filtered_df.empty:
             filtered_df = filtered_df.drop_duplicates(subset="file_path")
 
+        # Sort HU charts so SB always appears before BB
+        if st.session_state.selected_position == "HU" and not filtered_df.empty:
+            position_order = {"SB":0, "BB":1}
+            filtered_df = filtered_df.copy()
+            filtered_df["_sort_key"] = filtered_df["filename"].apply(
+                lambda x: next((v for k, v in position_order.items() if k in x.upper()),99)
+            )
+            filtered_df = filtered_df.sort_values("_sort_key").drop(columns=["_sort_key"])
         # Display results
         if st.session_state.get("show_results") and not filtered_df.empty:
             display_charts(filtered_df)
