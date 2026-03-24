@@ -460,17 +460,37 @@ def main():
                     else stack_options[5]
                 )
 
-                selected_stack = st.selectbox(
-                    "Select stack size:",
-                    stack_options,
-                    index=stack_options.index(default_stack)
-                )
+                stack_cols = st.columns([4, 1, 1])
+                with stack_cols[0]:
+                    selected_stack = st.selectbox(
+                        "Select stack size:",
+                        stack_options,
+                        index=stack_options.index(default_stack),
+                        label_visibility="collapsed"
+                    )
+
+                current_idx = stack_options.index(default_stack)
+                with stack_cols[1]:
+                    dec_disabled = current_idx == 0
+                    if st.button("−", key="stack_dec", disabled=dec_disabled, help="Decrease stack size by 1bb"):
+                        st.session_state.selected_stack = stack_options[current_idx - 1]
+                        st.session_state.selected_action = None
+                        st.session_state.show_results = False
+                        st.rerun()
+
+                with stack_cols[2]:
+                    inc_disabled = current_idx == len(stack_options) - 1
+                    if st.button("+", key="stack_inc", disabled=inc_disabled, help="Increase stack size by 1bb"):
+                        st.session_state.selected_stack = stack_options[current_idx + 1]
+                        st.session_state.selected_action = None
+                        st.session_state.show_results = False
+                        st.rerun()
 
                 if selected_stack != st.session_state.selected_stack:
                     st.session_state.selected_stack = selected_stack
                     st.session_state.selected_action = None  # reset action when stack changes
                     st.session_state.show_results = False
-                    st.rerun()  # ✅ needed to trigger new suggestions/input behavior
+                    st.rerun()  # keep action suggestions in sync with current stack
 
         # 🔍 Action input (only for BB/SB/BTN)
         if st.session_state.selected_position in ["BB", "SB", "BTN"] and st.session_state.selected_stack:
